@@ -11,41 +11,71 @@ namespace ToDoListAPI.Controllers
     {
         // GET: api/<ValuesController>
         [HttpGet]
-        public IEnumerable<ToDoTask> Get()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ToDoTask))]
+        public ActionResult<IEnumerable<ToDoTask>> Get()
         {
-            return ToDoTask.ReadAll();
+            IEnumerable<ToDoTask> tasks = ToDoTask.ReadAll();
+            return Ok(tasks);
         }
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public ToDoTask Get(int id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ToDoTask))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Get(int id)
         {
             var task = ToDoTask.Read(id);
-            return task;
+            if (task == null)
+            {
+                return NotFound();
+            }
+            return Ok(task);
         }
 
         // POST api/<ValuesController>
         [HttpPost]
-        public void Post([FromBody] string description)
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Post([FromBody] string description)
         {
+            if (string.IsNullOrEmpty(description))
+            {
+                return BadRequest("The string can't be empty");
+            }
             ToDoTask newTask = new ToDoTask(description);
             newTask.Create();
+            return CreatedAtAction(nameof(Get), new { id = newTask.Id }, newTask);
         }
 
         // PUT api/<ValuesController>/5
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ToDoTask))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPut("{id to finnish}")]
-        public void Put(int id)
+        public IActionResult Put(int id)
         {
             ToDoTask task = ToDoTask.Read(id);
+            if (task == null)
+            {
+                return NotFound();
+            }
             task.FinishTask();
+            return Ok(task);
         }
 
         // DELETE api/<ValuesController>/5
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ToDoTask))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete("{id to delete}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
             ToDoTask task = ToDoTask.Read(id);
+            if (task == null)
+            {
+                return NotFound();
+            }
             task.Delete();
+            return NoContent();
         }
     }
 }
