@@ -45,7 +45,15 @@ namespace ToDoListAPI.Controllers
         /// Add a new ToDoTask
         /// </summary>
         /// <param name="description"></param>
-        /// <returns></returns>
+        /// <returns>A new ToDoTask</returns>
+        /// <remarks>
+        /// Voorbeeld van een verzoek:
+        /// 
+        /// Post /ToDoTask
+        /// {
+        ///     "description": "XML leren"
+        /// }
+        /// </remarks>
         // POST api/<ValuesController>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
